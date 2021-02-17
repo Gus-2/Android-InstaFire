@@ -20,6 +20,11 @@ class PostActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
 
+        // Create the layoyt file wich represent one post
+        // Create data source
+        // Create the adapter
+        // Bind the adapter and layout manager to the RV
+
         fireStoreDb = FirebaseFirestore.getInstance()
 
         val postsReference = fireStoreDb.collection("posts").limit(20).orderBy("creation_time_ms", Query.Direction.DESCENDING)
