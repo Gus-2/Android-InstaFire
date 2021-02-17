@@ -6,9 +6,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import gus.android.models.Post
+import kotlinx.android.synthetic.main.activity_post.*
 
 private const val TAG = "PostActivity"
 
@@ -16,6 +18,7 @@ class PostActivity : AppCompatActivity() {
 
     private lateinit var fireStoreDb: FirebaseFirestore
     private lateinit var posts: MutableList<Post>
+    private lateinit var adapter: PostsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,7 +28,10 @@ class PostActivity : AppCompatActivity() {
         // Create data source
         posts = mutableListOf()
         // Create the adapter
+        adapter = PostsAdapter(this, posts)
         // Bind the adapter and layout manager to the RV
+        rvPosts.adapter = adapter
+        rvPosts.layoutManager = LinearLayoutManager(this)
 
         fireStoreDb = FirebaseFirestore.getInstance()
 
@@ -38,10 +44,9 @@ class PostActivity : AppCompatActivity() {
             }
 
             val postList = snapshot.toObjects(Post::class.java)
-
-            for (post in postList) {
-                Log.i(TAG, "Post $post")
-            }
+            posts.clear()
+            posts.addAll(postList)
+            adapter.notifyDataSetChanged()
         }
     }
 
