@@ -7,6 +7,8 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
+import gus.android.models.Post
 
 private const val TAG = "PostActivity"
 
@@ -20,16 +22,18 @@ class PostActivity : AppCompatActivity() {
 
         fireStoreDb = FirebaseFirestore.getInstance()
 
-        val postsReference = fireStoreDb.collection("posts")
+        val postsReference = fireStoreDb.collection("posts").limit(20).orderBy("creation_time_ms", Query.Direction.DESCENDING)
 
-        postsReference.addSnapshotListener{ snapshot, exception ->
-            if(exception != null || snapshot == null) {
+        postsReference.addSnapshotListener { snapshot, exception ->
+            if (exception != null || snapshot == null) {
                 Log.e(TAG, "Exception when querying posts !", exception)
                 return@addSnapshotListener
             }
 
-            for(document in snapshot.documents) {
-                Log.i(TAG, "Document ${document.id}: ${document.data}")
+            val postList = snapshot.toObjects(Post::class.java)
+
+            for (post in postList) {
+                Log.i(TAG, "Post $post")
             }
         }
     }
@@ -40,7 +44,7 @@ class PostActivity : AppCompatActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if( item.itemId == R.id.menu_profile) {
+        if (item.itemId == R.id.menu_profile) {
             val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)
         }
