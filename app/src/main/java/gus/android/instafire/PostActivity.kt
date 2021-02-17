@@ -15,6 +15,7 @@ private const val TAG = "PostActivity"
 class PostActivity : AppCompatActivity() {
 
     private lateinit var fireStoreDb: FirebaseFirestore
+    private lateinit var posts: MutableList<Post>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +23,7 @@ class PostActivity : AppCompatActivity() {
 
         // Create the layoyt file wich represent one post
         // Create data source
+        posts = mutableListOf()
         // Create the adapter
         // Bind the adapter and layout manager to the RV
 
