@@ -35,7 +35,6 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-
             // These methods are asynchronous so we need to listen to them
             // to be notified when the task is done
             auth.signInWithEmailAndPassword(email, password)
