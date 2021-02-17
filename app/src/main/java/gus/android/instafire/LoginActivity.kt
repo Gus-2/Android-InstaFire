@@ -1,5 +1,6 @@
 package gus.android.instafire
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -14,7 +15,18 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        // Firebase authentication check
+        val auth = FirebaseAuth.getInstance()
+
+        // If there is already someone connected
+        if(auth.currentUser != null) {
+            goPostActivity()
+        }
+
         btnLogin.setOnClickListener {
+
+            btnLogin.isEnabled = false
+
             val email = etLoginEmail.text.toString()
             val password = etLoginPassword.text.toString()
 
@@ -23,12 +35,12 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Firebase authentication check
-            val auth = FirebaseAuth.getInstance()
+
             // These methods are asynchronous so we need to listen to them
             // to be notified when the task is done
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
+                    btnLogin.isEnabled = true
                     if(task.isSuccessful) {
                         Toast.makeText(this, "Success !", Toast.LENGTH_SHORT).show()
                         goPostActivity()
@@ -42,5 +54,9 @@ class LoginActivity : AppCompatActivity() {
 
     private fun goPostActivity() {
         Log.i(TAG, "goPostActivity")
+        val intent = Intent(this, PostActivity::class.java)
+        startActivity(intent)
+        // It allows that when you're in the second activity, it will disable the come back to the LoginActivity
+        finish()
     }
 }
