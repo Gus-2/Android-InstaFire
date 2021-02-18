@@ -7,5 +7,5 @@
     <string name="add_a_post">Add a post !</string>
     <string name="btn_add_an_image">Add an Image</string>
     <string name="btn_publish">Publish</string>
-    <string name="et_description">description</string>
+    <string name="et_description">Description</string>
 </resources>
