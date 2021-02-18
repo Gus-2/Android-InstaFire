@@ -71,6 +71,11 @@ open class PostActivity : AppCompatActivity() {
             posts.addAll(postList)
             adapter.notifyDataSetChanged()
         }
+
+        fabCreate.setOnClickListener{
+            val intent = Intent(this, CreateActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
