@@ -104,7 +104,7 @@ class CreateActivity : AppCompatActivity() {
                     Toast.makeText(this, "Failed to publish the post", Toast.LENGTH_SHORT).show()
                 }
                 etDescription.text.clear()
-                ivPost.setImageResource(0)
+                ivPicture.setImageResource(0)
                 Toast.makeText(this, "Success !", Toast.LENGTH_SHORT).show()
                 val profileIntent = Intent(this, ProfileActivity::class.java)
                 profileIntent.putExtra(EXTRA_USERNAME, signedInUser?.username)

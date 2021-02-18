@@ -16,7 +16,7 @@ import kotlinx.android.synthetic.main.activity_post.*
 import kotlin.math.sign
 
 private const val TAG = "PostActivity"
-public const val EXTRA_USERNAME = "EXTRA_USERNAME"
+const val EXTRA_USERNAME = "EXTRA_USERNAME"
 
 open class PostActivity : AppCompatActivity() {
 
@@ -28,7 +28,7 @@ open class PostActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_post)
-
+        Log.d(TAG, "repasse onCreate")
         // Create the layoyt file wich represent one post
         // Create data source
         posts = mutableListOf()
@@ -40,42 +40,63 @@ open class PostActivity : AppCompatActivity() {
 
         fireStoreDb = FirebaseFirestore.getInstance()
 
-        fireStoreDb.collection("users")
-            .document(FirebaseAuth.getInstance().currentUser?.uid as String)
-            .get()
-            .addOnSuccessListener { userSnapshot ->
-                signedInUser = userSnapshot.toObject(User::class.java)
-                Log.i(TAG, "signed in user: ${signedInUser}")
-            }
-            .addOnFailureListener{
-                Log.i(TAG, "Failure fetching signed in user", it)
-            }
-
-        var postsReference = fireStoreDb.collection("posts").limit(20)
-            .orderBy("creation_time_ms", Query.Direction.DESCENDING)
-
-        val username = intent.getStringExtra(EXTRA_USERNAME)
-        if (username != null) {
-            supportActionBar?.title = username
-            postsReference = postsReference.whereEqualTo("user.username", username)
-        }
-
-        postsReference.addSnapshotListener { snapshot, exception ->
-            if (exception != null || snapshot == null) {
-                Log.e(TAG, "Exception when querying posts !", exception)
-                return@addSnapshotListener
-            }
-
-            val postList = snapshot.toObjects(Post::class.java)
-            posts.clear()
-            posts.addAll(postList)
-            adapter.notifyDataSetChanged()
-        }
-
         fabCreate.setOnClickListener{
             val intent = Intent(this, CreateActivity::class.java)
             startActivity(intent)
         }
+
+        refreshPosts()
+
+        srlPosts.setOnRefreshListener {
+            refreshPosts()
+        }
+    }
+
+    fun refreshPosts() {
+
+        var postsReference = fireStoreDb.collection("posts").limit(20)
+            .orderBy("creation_time_ms", Query.Direction.DESCENDING)
+
+        if(this::class.toString() == "class gus.android.instafire.ProfileActivity") {
+            Log.d(TAG, "dedans")
+            fireStoreDb.collection("users")
+                .document(FirebaseAuth.getInstance().currentUser?.uid as String)
+                .get()
+                .addOnSuccessListener { userSnapshot ->
+                    signedInUser = userSnapshot.toObject(User::class.java)
+
+                    val username = signedInUser?.username
+
+                    if (username != null) {
+                        supportActionBar?.title = username
+                        postsReference = postsReference.whereEqualTo("user.username", username)
+                    }
+                    displayRefreshedPosts(postsReference)
+                }
+                .addOnFailureListener{
+                    Log.i(TAG, "Failure fetching signed in user", it)
+                }
+        } else {
+            displayRefreshedPosts(postsReference)
+        }
+    }
+
+    fun displayRefreshedPosts(postsReference: Query) {
+        postsReference
+            .get()
+            .addOnFailureListener { exception ->
+                Log.e(TAG, "Exception when querying posts !", exception)
+                return@addOnFailureListener
+            }.addOnSuccessListener { querySnapshot ->
+
+                val postList = querySnapshot.toObjects(Post::class.java)
+                posts.clear()
+                posts.addAll(postList)
+                adapter.notifyDataSetChanged()
+
+                srlPosts.isRefreshing = false
+
+            }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
