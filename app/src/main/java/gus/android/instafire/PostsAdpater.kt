@@ -10,11 +10,11 @@ import com.bumptech.glide.Glide
 import gus.android.models.Post
 import kotlinx.android.synthetic.main.item_post.view.*
 
-class PostsAdapter(val context: Context, val posts: List<Post>):
+class PostsAdapter(val context: Context, val posts: List<Post>) :
     RecyclerView.Adapter<PostsAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.item_post, parent, false )
+        val view = LayoutInflater.from(context).inflate(R.layout.item_post, parent, false)
         return ViewHolder(view)
     }
 
@@ -24,8 +24,7 @@ class PostsAdapter(val context: Context, val posts: List<Post>):
 
     override fun getItemCount(): Int = posts.size
 
-
-    inner class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         fun bind(post: Post) {
             itemView.tvUserName.text = post.user?.username
             itemView.tvDescription.text = post.description
@@ -39,5 +38,4 @@ class PostsAdapter(val context: Context, val posts: List<Post>):
 
         }
     }
-
 }
