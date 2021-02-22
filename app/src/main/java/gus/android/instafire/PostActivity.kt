@@ -27,7 +27,6 @@ const val EXTRA_USERNAME = "EXTRA_USERNAME"
 open class PostActivity : AppCompatActivity() {
 
     private var signedInUser: User? = null
-    private var postList: MutableList<Post> = mutableListOf()
     private lateinit var fireStoreDb: FirebaseFirestore
     private lateinit var posts: MutableList<Post>
     private lateinit var adapter: PostsAdapter
@@ -57,7 +56,6 @@ open class PostActivity : AppCompatActivity() {
                     val pastVisibleItem = layoutManager.findFirstCompletelyVisibleItemPosition()
                     val total = adapter.itemCount
 
-                    Log.d(TAG, "" + visibleItemCount + " " + pastVisibleItem + " " + total)
                     if (!isLoading) {
                         if ((visibleItemCount + pastVisibleItem) >= total) {
                             pgPosts.isVisible = true
@@ -80,6 +78,8 @@ open class PostActivity : AppCompatActivity() {
         refreshPosts()
 
         srlPosts.setOnRefreshListener {
+            posts.clear()
+            lastVisible = null
             refreshPosts()
         }
     }
@@ -128,6 +128,9 @@ open class PostActivity : AppCompatActivity() {
 
 
     fun displayRefreshedPosts(postsReference: Query) {
+
+        Thread.sleep(2000)
+
         postsReference
             .get()
             .addOnFailureListener { exception ->
@@ -139,7 +142,6 @@ open class PostActivity : AppCompatActivity() {
 
                     var postRetrieved: List<Post>  = querySnapshot.toObjects(Post::class.java)
 
-                    postList.clear()
                     posts.addAll(postRetrieved)
                     adapter.notifyDataSetChanged()
 
@@ -149,7 +151,6 @@ open class PostActivity : AppCompatActivity() {
                     Toast.makeText(this, "No more posts !", Toast.LENGTH_SHORT).show()
                 }
                 pgPosts.isVisible = false
-
             }
     }
 
