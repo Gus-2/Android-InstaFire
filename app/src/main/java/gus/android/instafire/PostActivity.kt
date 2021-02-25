@@ -63,7 +63,6 @@ open class PostActivity : AppCompatActivity() {
                         }
                     }
                 }
-
                 super.onScrolled(recyclerView, dx, dy)
             }
         })
